@@ -55,6 +55,8 @@ class Scanner():
         if char == "\n":
             self.line += 1
             return
+        elif char == " " or char == "\t":
+            return
         elif char == "/" and self.match("/"):
             while(self.peek() != "\n" and not self.isAtEnd()):
                 self.advance()
