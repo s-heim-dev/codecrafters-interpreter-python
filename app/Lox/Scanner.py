@@ -43,6 +43,11 @@ class Scanner():
         text = self.source[self.start:self.current]
         self.tokens.append(Token(tokenType, text, literal, self.line))
 
+    def peek(self):
+        if (self.isAtEnd()):
+            return '\0'
+        return self.source[self.current]
+
 
     def scanToken(self):
         char = self.advance()
@@ -50,8 +55,10 @@ class Scanner():
         if char == "\n":
             self.line += 1
             return
-        
-        if (TokenType.has_value(char)):
+        elif char == "/" and self.match("/"):
+            while(self.peek() != "\n" and not self.isAtEnd()):
+                self.advance()
+        elif (TokenType.has_value(char)):
             if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
                 char = str(char) + "="
             self.addToken(TokenType(char))
