@@ -52,6 +52,27 @@ class TokenType(Enum):
     def __str__(self) -> str:
         return self.name
 
-
     def has_value(value) -> bool:
         return value in TokenType._value2member_map_ 
+
+    def is_keyword(value) -> bool:
+        return value in KEYWORDS
+
+KEYWORDS = {
+    "and": TokenType.AND,
+    "class": TokenType.CLASS,
+    "else": TokenType.ELSE,
+    "false": TokenType.FALSE,
+    "for": TokenType.FOR,
+    "fun": TokenType.FUN,
+    "if": TokenType.IF,
+    "nil": TokenType.NIL,
+    "or": TokenType.OR,
+    "print": TokenType.PRINT,
+    "return": TokenType.RETURN,
+    "super": TokenType.SUPER,
+    "this": TokenType.THIS,
+    "true": TokenType.TRUE,
+    "var": TokenType.VAR,
+    "while": TokenType.WHILE,
+}

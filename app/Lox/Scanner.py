@@ -42,6 +42,10 @@ class Scanner():
             return '\0'
         return self.source[self.current + 1]
 
+    def peek_is_alphanum(self):
+        peek = self.peek()
+        return peek.isalnum() or peek == "_"
+
     def string(self):
         while (self.peek() != "\"" and not self.isAtEnd()):
             if (self.peek() == "\n"):
@@ -69,10 +73,15 @@ class Scanner():
         self.addToken(TokenType.NUMBER, float(self.source[self.start:self.current]))
     
     def identifier(self):
-        while (self.peek().isalnum()):
+        while (self.peek_is_alphanum()):
             self.advance()
-        
-        self.addToken(TokenType.IDENTIFIER)
+
+        string = self.source[self.start:self.current]
+
+        if TokenType.is_keyword(string):
+            self.addToken(TokenType(string))
+        else:
+            self.addToken(TokenType.IDENTIFIER)
 
     def scanToken(self):
         char = self.advance()
