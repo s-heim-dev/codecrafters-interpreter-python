@@ -68,6 +68,11 @@ class Scanner():
 
         self.addToken(TokenType.NUMBER, float(self.source[self.start:self.current]))
     
+    def identifier(self):
+        while (self.peek().isalnum()):
+            self.advance()
+        
+        self.addToken(TokenType.IDENTIFIER)
 
     def scanToken(self):
         char = self.advance()
@@ -84,6 +89,8 @@ class Scanner():
             self.string()
         elif char.isdigit():
             self.number()
+        elif char.isalpha() or char == "_":
+            self.identifier()
         elif (TokenType.has_value(char)):
             if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
                 char = str(char) + "="
