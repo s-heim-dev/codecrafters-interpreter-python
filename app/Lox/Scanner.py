@@ -1,25 +1,14 @@
-import sys
-
+from app.Lox.LoxError import LoxError
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
 
 class Scanner():
-    hadError = False
-
-    def error(line: int, message: str):
-        Scanner.report(line, "", message)
-    
-    def report(line: int, where: str, message: str):
-        print(f"[line {line}] Error{where}: {message}", file=sys.stderr)
-        Scanner.hadError = True
-
     def __init__(self, source: str):
         self.source = source
         self.tokens = []
         self.start = 0
         self.current = 0
         self.line = 1
-        self.hadError = False
 
     def isAtEnd(self) -> bool:
         return self.current >= len(self.source)
@@ -48,6 +37,19 @@ class Scanner():
             return '\0'
         return self.source[self.current]
 
+    def string(self):
+        while (self.peek() != "\"" and not self.isAtEnd()):
+            if (self.peek() == "\n"):
+                self.line += 1
+            self.advance()
+        
+        if (self.isAtEnd()):
+            LoxError.error(self.line, "Unterminated string.")
+            return
+        
+        self.advance()
+        string = self.source[self.start + 1:self.current - 1]
+        self.addToken(TokenType.STRING, string)
 
     def scanToken(self):
         char = self.advance()
@@ -60,12 +62,14 @@ class Scanner():
         elif char == "/" and self.match("/"):
             while(self.peek() != "\n" and not self.isAtEnd()):
                 self.advance()
+        elif char == "\"":
+            self.string()
         elif (TokenType.has_value(char)):
             if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
                 char = str(char) + "="
             self.addToken(TokenType(char))
         else:
-            Scanner.error(self.line, f"Unexpected character: {char}")
+            LoxError.error(self.line, f"Unexpected character: {char}")
 
     def scanTokens(self):
         while(not self.isAtEnd()):

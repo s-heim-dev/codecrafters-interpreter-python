@@ -1,3 +1,4 @@
+from app.Lox.LoxError import LoxError
 from app.Lox.Scanner import Scanner
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
@@ -11,14 +12,14 @@ class Lox():
                 return
             
             Lox.run(line)
-            Scanner.hadError = false
+            LoxError.hadError = False
 
     def runFile(path: str):
         with open(path, "r") as file:
             file_content = file.read()
 
         Lox.run(file_content)
-        if Scanner.hadError:
+        if LoxError.hadError:
             exit(65)
             
     def run(source: str):
