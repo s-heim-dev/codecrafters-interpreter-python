@@ -1,4 +1,6 @@
 from app.Lox.Scanner import Scanner
+from app.Lox.Token import Token
+from app.Lox.TokenType import TokenType
 
 class Lox():
     def runPrompt():
