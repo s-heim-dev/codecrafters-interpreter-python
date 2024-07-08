@@ -49,9 +49,9 @@ class TokenType(Enum):
 
     EOF = "EOF"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
-    def has_value(value):
+    def has_value(value) -> bool:
         return value in TokenType._value2member_map_ 

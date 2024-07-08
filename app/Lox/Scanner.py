@@ -21,13 +21,23 @@ class Scanner():
         self.line = 1
         self.hadError = False
 
-    def isAtEnd(self):
+    def isAtEnd(self) -> bool:
         return self.current >= len(self.source)
 
-    def advance(self):
+    def advance(self) -> chr:
         char = self.source[self.current]
         self.current += 1
         return char
+
+    def match(self, expected: chr) -> bool:
+        if (self.isAtEnd()):
+            return False
+        
+        if self.source[self.current] != expected:
+            return False
+        
+        self.current += 1
+        return True
 
     def addToken(self, tokenType: TokenType, literal: object = None):
         text = self.source[self.start:self.current]
@@ -40,8 +50,10 @@ class Scanner():
         if char == "\n":
             self.line += 1
             return
-
+        
         if (TokenType.has_value(char)):
+            if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
+                char = str(char) + "="
             self.addToken(TokenType(char))
         else:
             Scanner.error(self.line, f"Unexpected character: {char}")

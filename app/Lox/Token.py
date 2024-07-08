@@ -7,8 +7,8 @@ class Token():
         self.literal = literal if literal else "null"
         self.line = line
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.tokenType} {self.lexeme} {self.literal}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
