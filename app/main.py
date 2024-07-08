@@ -1,10 +1,11 @@
 import sys
-
+from app.Lox import Lox
 
 def main():
-    # You can use print statements as follows for debugging, they'll be visible when running tests.
-    print("Logs from your program will appear here!", file=sys.stderr)
-
+    if len(sys.argv) == 1:
+        Lox.runPrompt()
+        exit(0)
+    
     if len(sys.argv) < 3:
         print("Usage: ./your_program.sh tokenize <filename>", file=sys.stderr)
         exit(1)
@@ -16,15 +17,7 @@ def main():
         print(f"Unknown command: {command}", file=sys.stderr)
         exit(1)
 
-    with open(filename) as file:
-        file_contents = file.read()
-
-    # Uncomment this block to pass the first stage
-    if file_contents:
-        raise NotImplementedError("Scanner not implemented")
-    else:
-        print("EOF  null") # Placeholder, remove this line when implementing the scanner
-
+    Lox.runFile(filename)
 
 if __name__ == "__main__":
     main()
