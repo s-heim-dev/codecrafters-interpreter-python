@@ -37,6 +37,11 @@ class Scanner():
             return '\0'
         return self.source[self.current]
 
+    def peek_next(self):
+        if (self.current + 1 >= len(self.source)):
+            return '\0'
+        return self.source[self.current + 1]
+
     def string(self):
         while (self.peek() != "\"" and not self.isAtEnd()):
             if (self.peek() == "\n"):
@@ -51,6 +56,19 @@ class Scanner():
         string = self.source[self.start + 1:self.current - 1]
         self.addToken(TokenType.STRING, string)
 
+    def number(self):
+        while (self.peek().isdigit()):
+            self.advance()
+        
+        if (self.peek() == "." and self.peek_next().isdigit()):
+            self.advance()
+
+        while (self.peek().isdigit()):
+            self.advance()
+
+        self.addToken(TokenType.NUMBER, float(self.source[self.start:self.current]))
+    
+
     def scanToken(self):
         char = self.advance()
 
@@ -64,6 +82,8 @@ class Scanner():
                 self.advance()
         elif char == "\"":
             self.string()
+        elif char.isdigit():
+            self.number()
         elif (TokenType.has_value(char)):
             if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
                 char = str(char) + "="
