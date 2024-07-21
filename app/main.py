@@ -13,11 +13,7 @@ def main():
     command = sys.argv[1]
     filename = sys.argv[2]
 
-    if command != "tokenize":
-        print(f"Unknown command: {command}", file=sys.stderr)
-        exit(1)
-
-    Lox.runFile(filename)
+    Lox.runFile(filename, command)
 
 if __name__ == "__main__":
     main()

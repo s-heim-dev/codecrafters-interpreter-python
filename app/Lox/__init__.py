@@ -1,4 +1,5 @@
 from app.Lox.LoxError import LoxError
+from app.Lox.Parser import Parser
 from app.Lox.Scanner import Scanner
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
@@ -10,20 +11,33 @@ class Lox():
             line = input()
             if not line:
                 return
-            
-            Lox.run(line)
+
+            Lox.parse(line)
             LoxError.hadError = False
 
-    def runFile(path: str):
+    def runFile(path: str, command: str):
         with open(path, "r") as file:
             file_content = file.read()
 
-        Lox.run(file_content)
+        if command == "tokenize":
+            Lox.tokenize(file_content)
+        elif command == "parse":
+            Lox.parse(file_content)
+        else:
+            print(f"Unknown command: {command}", file=sys.stderr)
+            exit(1)
+
         if LoxError.hadError:
             exit(65)
             
-    def run(source: str):
+    def tokenize(source: str):
         scanner = Scanner(source)
-
         for token in scanner.scanTokens():
             print(token)
+    
+    def parse(source: str):
+        scanner = Scanner(source)
+        tokens = scanner.scanTokens()
+        parser = Parser(tokens)
+        tree = parser.parse()
+        print(tree)

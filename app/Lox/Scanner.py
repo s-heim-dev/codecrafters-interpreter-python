@@ -13,12 +13,12 @@ class Scanner():
     def isAtEnd(self) -> bool:
         return self.current >= len(self.source)
 
-    def advance(self) -> chr:
+    def advance(self) -> str:
         char = self.source[self.current]
         self.current += 1
         return char
 
-    def match(self, expected: chr) -> bool:
+    def match(self, expected: str) -> bool:
         if (self.isAtEnd()):
             return False
         
@@ -32,7 +32,7 @@ class Scanner():
         text = self.source[self.start:self.current]
         self.tokens.append(Token(tokenType, text, literal, self.line))
 
-    def peek(self):
+    def peek(self) -> str:
         if (self.isAtEnd()):
             return '\0'
         return self.source[self.current]
