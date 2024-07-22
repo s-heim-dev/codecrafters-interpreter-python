@@ -1,6 +1,6 @@
 from typing import List
 
-from app.Lox.LoxError import ParseError
+from app.Lox.LoxError import LoxError, ParseError
 from app.Lox.Expression import Expression
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
@@ -99,6 +99,8 @@ class Parser():
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Expression.Grouping(expr)
+            
+        LoxError.error(self.peek(), "Expect expression.")
     
     def consume(self, tokenType: TokenType, message: str):
         if (self.check(tokenType)):

@@ -40,4 +40,5 @@ class Lox():
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
         tree = parser.parse()
-        print(tree)
+        if not LoxError.hadError:
+            print(tree)

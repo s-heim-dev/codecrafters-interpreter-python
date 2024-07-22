@@ -1,6 +1,7 @@
 import sys
 
 from app.Lox.Token import Token
+from app.Lox.TokenType import TokenType
 
 class ParseError(RuntimeError):
     pass
