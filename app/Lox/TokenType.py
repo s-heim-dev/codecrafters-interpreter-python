@@ -52,10 +52,10 @@ class TokenType(Enum):
     def __str__(self) -> str:
         return self.name
 
-    def has_value(value) -> bool:
+    def has_value(value: str) -> bool:
         return value in TokenType._value2member_map_ 
 
-    def is_keyword(value) -> bool:
+    def is_keyword(value: str) -> bool:
         return value in KEYWORDS
 
 KEYWORDS = {

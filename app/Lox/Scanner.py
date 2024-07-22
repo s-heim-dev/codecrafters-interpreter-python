@@ -1,3 +1,5 @@
+from typing import List
+
 from app.Lox.LoxError import LoxError
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
@@ -27,26 +29,27 @@ class Scanner():
         
         self.current += 1
         return True
-
-    def addToken(self, tokenType: TokenType, literal: object = None):
-        text = self.source[self.start:self.current]
-        self.tokens.append(Token(tokenType, text, literal, self.line))
-
+    
     def peek(self) -> str:
         if (self.isAtEnd()):
             return '\0'
         return self.source[self.current]
 
-    def peek_next(self):
+    def peekNext(self) -> str:
         if (self.current + 1 >= len(self.source)):
             return '\0'
         return self.source[self.current + 1]
-
-    def peek_is_alphanum(self):
+    
+    def peekIsAlphanum(self) -> bool:
         peek = self.peek()
         return peek.isalnum() or peek == "_"
 
-    def string(self):
+class Scanner(Scanner):
+    def addToken(self, tokenType: TokenType, literal: object = None) -> None:
+        text = self.source[self.start:self.current]
+        self.tokens.append(Token(tokenType, text, literal, self.line))
+
+    def addTokenAsString(self) -> None:
         while (self.peek() != "\"" and not self.isAtEnd()):
             if (self.peek() == "\n"):
                 self.line += 1
@@ -60,11 +63,11 @@ class Scanner():
         string = self.source[self.start + 1:self.current - 1]
         self.addToken(TokenType.STRING, string)
 
-    def number(self):
+    def addTokenAsNumber(self) -> None:
         while (self.peek().isdigit()):
             self.advance()
         
-        if (self.peek() == "." and self.peek_next().isdigit()):
+        if (self.peek() == "." and self.peekNext().isdigit()):
             self.advance()
 
         while (self.peek().isdigit()):
@@ -72,8 +75,8 @@ class Scanner():
 
         self.addToken(TokenType.NUMBER, float(self.source[self.start:self.current]))
     
-    def identifier(self):
-        while (self.peek_is_alphanum()):
+    def addTokenAsIdentifier(self) -> None:
+        while (self.peekIsAlphanum()):
             self.advance()
 
         string = self.source[self.start:self.current]
@@ -83,7 +86,7 @@ class Scanner():
         else:
             self.addToken(TokenType.IDENTIFIER)
 
-    def scanToken(self):
+    def scanToken(self) -> None:
         char = self.advance()
 
         if char == "\n":
@@ -95,11 +98,11 @@ class Scanner():
             while(self.peek() != "\n" and not self.isAtEnd()):
                 self.advance()
         elif char == "\"":
-            self.string()
+            self.addTokenAsString()
         elif char.isdigit():
-            self.number()
+            self.addTokenAsNumber()
         elif char.isalpha() or char == "_":
-            self.identifier()
+            self.addTokenAsIdentifier()
         elif (TokenType.has_value(char)):
             if (char == "!" or char == "=" or char == "<" or char == ">") and self.match("="):
                 char = str(char) + "="
@@ -107,11 +110,10 @@ class Scanner():
         else:
             LoxError.error(self.line, f"Unexpected character: {char}")
 
-    def scanTokens(self):
+    def scanTokens(self) -> List[Token]:
         while(not self.isAtEnd()):
             self.start = self.current
             self.scanToken()
 
         self.tokens.append(Token(TokenType.EOF, "", None, self.line))
-
         return self.tokens

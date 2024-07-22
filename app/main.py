@@ -1,4 +1,5 @@
 import sys
+
 from app.Lox import Lox
 
 def main():

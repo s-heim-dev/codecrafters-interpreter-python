@@ -1,11 +1,11 @@
+import sys
+
 from app.Lox.LoxError import LoxError
 from app.Lox.Parser import Parser
 from app.Lox.Scanner import Scanner
-from app.Lox.Token import Token
-from app.Lox.TokenType import TokenType
 
 class Lox():
-    def runPrompt():
+    def runPrompt() -> None:
         while(True):
             print("> ")
             line = input()
@@ -15,7 +15,7 @@ class Lox():
             Lox.parse(line)
             LoxError.hadError = False
 
-    def runFile(path: str, command: str):
+    def runFile(path: str, command: str) -> None:
         with open(path, "r") as file:
             file_content = file.read()
 
@@ -30,12 +30,12 @@ class Lox():
         if LoxError.hadError:
             exit(65)
             
-    def tokenize(source: str):
+    def tokenize(source: str) -> None:
         scanner = Scanner(source)
         for token in scanner.scanTokens():
             print(token)
     
-    def parse(source: str):
+    def parse(source: str) -> None:
         scanner = Scanner(source)
         tokens = scanner.scanTokens()
         parser = Parser(tokens)

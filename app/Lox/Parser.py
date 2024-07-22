@@ -100,7 +100,7 @@ class Parser():
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Expression.Grouping(expr)
             
-        LoxError.error(self.peek(), "Expect expression.")
+        LoxError.parseError(self.peek(), "Expect expression.")
     
     def consume(self, tokenType: TokenType, message: str):
         if (self.check(tokenType)):
