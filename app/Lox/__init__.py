@@ -14,7 +14,7 @@ class Lox():
                 return
 
             Lox.evaluate(line)
-            LoxError.hadError = False
+            LoxError.hadSyntaxError = False
             LoxError.hadRuntimeError = False
 
     def runFile(path: str, command: str) -> None:
@@ -31,7 +31,7 @@ class Lox():
             print(f"Unknown command: {command}", file=sys.stderr)
             exit(1)
 
-        if LoxError.hadError:
+        if LoxError.hadSyntaxError:
             exit(65)
         elif LoxError.hadRuntimeError:
             exit(70)
@@ -46,7 +46,7 @@ class Lox():
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
         tree = parser.parse()
-        if not LoxError.hadError and not LoxError.hadRuntimeError:
+        if not LoxError.hadError():
             print(tree)
     
     def evaluate(source: str) -> None:

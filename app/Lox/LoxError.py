@@ -12,15 +12,18 @@ class LoxRuntimeError(RuntimeError):
         self.token = token
 
 class LoxError():
-    hadError = False
+    hadSyntaxError = False
     hadRuntimeError = False
+
+    def hadError() -> bool:
+        return LoxError.hadSyntaxError or LoxError.hadRuntimeError
 
     def error(line: int, message: str) -> None:
         LoxError.report(line, "", message)
     
     def report(line: int, where: str, message: str) -> None:
         print(f"[line {line}] Error{where}: {message}", file=sys.stderr)
-        LoxError.hadError = True
+        LoxError.hadSyntaxError = True
 
     def parseError(token: Token, message: str) -> None:
         if (token.tokenType == TokenType.EOF):
