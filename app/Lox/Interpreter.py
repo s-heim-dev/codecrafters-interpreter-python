@@ -11,10 +11,13 @@ class Interpreter():
             return self.evalBinary(expr)
         if (type(expr) == Expression.Unary):
             return self.evalUnary(expr)
-            
+
         raise LoxRuntimeError(expr)
 
     def evalLiteral(self, expr: Expression.Literal) -> object:
+        if (type(expr.value) == float and int(expr.value) == expr.value):
+            return int(expr.value)
+            
         return expr.value
     
     def interpret(self, expr: Expression) -> None:

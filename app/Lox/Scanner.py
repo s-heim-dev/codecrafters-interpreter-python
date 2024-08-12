@@ -73,7 +73,9 @@ class Scanner(Scanner):
         while (self.peek().isdigit()):
             self.advance()
 
-        self.addToken(TokenType.NUMBER, float(self.source[self.start:self.current]))
+        value = self.source[self.start:self.current]
+
+        self.addToken(TokenType.NUMBER, float(value))
     
     def addTokenAsIdentifier(self) -> None:
         while (self.peekIsAlphanum()):
