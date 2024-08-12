@@ -26,6 +26,7 @@ class Interpreter():
         right = self.evaluate(expr.right)
 
         if (expr.operator.tokenType == TokenType.MINUS):
+            self.checkNumberOperand(expr.operator, right)
             return -1 * right
         if (expr.operator.tokenType == TokenType.BANG):
             return not self.isTruthy(right)
@@ -37,16 +38,52 @@ class Interpreter():
         right = self.evaluate(expr.right)
     
         if (expr.operator.tokenType == TokenType.PLUS):
+            self.checkNumberOrStringOperands(expr.operator, left, right)
             return left + right
         if (expr.operator.tokenType == TokenType.MINUS):
+            self.checkNumberOperands(expr.operator, left, right)
             return left - right
         if (expr.operator.tokenType == TokenType.STAR):
+            self.checkNumberOperands(expr.operator, left, right)
             return left * right
         if (expr.operator.tokenType == TokenType.SLASH):
+            self.checkNumberOperands(expr.operator, left, right)
             return left / right
+        if (expr.operator.tokenType == TokenType.GREATER):
+            self.checkNumberOperands(expr.operator, left, right)
+            return left > right
+        if (expr.operator.tokenType == TokenType.GREATER_EQUAL):
+            self.checkNumberOperands(expr.operator, left, right)
+            return left >= right
+        if (expr.operator.tokenType == TokenType.LESS):
+            self.checkNumberOperands(expr.operator, left, right)
+            return left < right
+        if (expr.operator.tokenType == TokenType.LESS_EQUAL):
+            self.checkNumberOperands(expr.operator, left, right)
+            return left <= right
+        if (expr.operator.tokenType == TokenType.EQUAL_EQUAL):
+            return left == right
+        if (expr.operator.tokenType == TokenType.BANG_EQUAL):
+            return left != right
         
         return None
+
+    def checkNumberOperand(self, operator: Token, operand: object) -> None:
+        if (type(operand) == float):
+            return
+        raise LoxRuntimeError(operator, "Operand must be a number")
         
+    def checkNumberOperands(self, operator: Token, left: object, right: object) -> None:
+        if (type(left) == float and type(right) == float):
+            return
+        raise LoxRuntimeError(operator, "Operands must be numbers")
+    
+    def checkNumberOrStringOperands(self, operator: Token, left: object, right: object) -> None:
+        if (type(left) == float and type(right) == float):
+            return
+        if (type(left) == str and type(right) == str):
+            return
+        raise LoxRuntimeError(operator, "Operands must be numbers or strings")
 
     def isTruthy(self, obj: object) -> bool:
         if obj == None:
@@ -71,6 +108,6 @@ class Interpreter():
             value = self.evaluate(expr)
             print(self.stringify(value))
         except LoxRuntimeError as error:
-            Lox.runtimeError(error)
+            LoxError.runtimeError(error)
     
     

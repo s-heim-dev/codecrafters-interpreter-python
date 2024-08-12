@@ -30,6 +30,6 @@ class LoxError():
         raise ParseError(message)
     
     def runtimeError(error: LoxRuntimeError) -> None:
-        print(error.getMessage() + "\n[line " + error.token.line + "]")
+        print(str(error) + "\n[line " + str(error.token.line) + "]")
         LoxError.hadError = True
 
