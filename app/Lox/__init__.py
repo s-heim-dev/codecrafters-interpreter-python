@@ -3,6 +3,7 @@ import sys
 from app.Lox.LoxError import LoxError
 from app.Lox.Parser import Parser
 from app.Lox.Scanner import Scanner
+from app.Lox.Interpreter import Interpreter
 
 class Lox():
     def runPrompt() -> None:
@@ -12,7 +13,7 @@ class Lox():
             if not line:
                 return
 
-            Lox.parse(line)
+            Lox.evaluate(line)
             LoxError.hadError = False
 
     def runFile(path: str, command: str) -> None:
@@ -23,6 +24,8 @@ class Lox():
             Lox.tokenize(file_content)
         elif command == "parse":
             Lox.parse(file_content)
+        elif command == "evaluate":
+            Lox.evaluate(file_content)
         else:
             print(f"Unknown command: {command}", file=sys.stderr)
             exit(1)
@@ -42,3 +45,11 @@ class Lox():
         tree = parser.parse()
         if not LoxError.hadError:
             print(tree)
+    
+    def evaluate(source: str) -> None:
+        scanner = Scanner(source)
+        tokens = scanner.scanTokens()
+        parser = Parser(tokens)
+        tree = parser.parse()
+        interpreter = Interpreter()
+        interpreter.interpret(tree)

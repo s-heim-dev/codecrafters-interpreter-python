@@ -6,6 +6,11 @@ from app.Lox.TokenType import TokenType
 class ParseError(RuntimeError):
     pass
 
+class LoxRuntimeError(RuntimeError):
+    def __init__(self, token: Token, message: str):
+        super().__init__(message)
+        self.token = token
+
 class LoxError():
     hadError = False
 
@@ -23,4 +28,8 @@ class LoxError():
             LoxError.report(token.line, " at '" + token.lexeme + "'", message)
 
         raise ParseError(message)
+    
+    def runtimeError(error: LoxRuntimeError) -> None:
+        print(error.getMessage() + "\n[line " + error.token.line + "]")
+        LoxError.hadError = True
 
