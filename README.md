@@ -3,3 +3,8 @@
 These are the basics for a Lox interpreter written in Python based on the
 ["Build Your Own Interpreter" Challenge](https://app.codecrafters.io/courses/interpreter/overview) by [codecrafters.io](https://codecrafters.io).
 
+## Commands
+
+- `tokenize`
+- `parse`
+- `evaluate`
