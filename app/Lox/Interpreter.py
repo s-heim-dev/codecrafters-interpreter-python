@@ -17,9 +17,6 @@ class Interpreter():
         raise LoxRuntimeError(expr)
 
     def evalLiteral(self, expr: Expression.Literal) -> object:
-        if (type(expr.value) == float and int(expr.value) == expr.value):
-            return int(expr.value)
-
         return expr.value
 
     def evalGrouping(self, expr: Expression.Grouping) -> object:
@@ -33,13 +30,33 @@ class Interpreter():
 
         if (expr.operator.tokenType == TokenType.MINUS):
             return -1 * right
+        if (expr.operator.tokenType == TokenType.BANG):
+            return not self.isTruthy(right)
         
         return None
+
+    def isTruthy(self, obj: object) -> bool:
+        if obj == None:
+            return False
+        if type(obj) == bool:
+            return bool(obj)
+        return True
+    
+    def stringify(self, obj: object) -> str:
+        if (obj == None):
+            return "nil"
+        if (type(obj) == float):
+            if (str(obj).endswith(".0")):
+                return str(int(obj))
+        if (type(obj) == bool):
+            return str(obj).lower()
+        
+        return str(obj)
     
     def interpret(self, expr: Expression) -> None:
         try:
             value = self.evaluate(expr)
-            print(value)
+            print(self.stringify(value))
         except LoxRuntimeError as error:
             Lox.runtimeError(error)
     

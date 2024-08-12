@@ -86,11 +86,11 @@ class Parser():
     
     def primary(self) -> Expression:
         if (self.match(TokenType.FALSE)):
-            return Expression.Literal("false")
+            return Expression.Literal(False)
         if (self.match(TokenType.TRUE)):
-            return Expression.Literal("true")
+            return Expression.Literal(True)
         if (self.match(TokenType.NIL)):
-            return Expression.Literal("nil")
+            return Expression.Literal(None)
         
         if (self.match(TokenType.NUMBER, TokenType.STRING)):
             return Expression.Literal(self.previous().literal)

@@ -31,6 +31,11 @@ class Expression(Expression):
             self.value = value
         
         def __str__(self) -> str:
+            if (self.value == None):
+                return "nil"
+            if (type(self.value) == bool):
+                return str(self.value).lower()
+                
             return str(self.value)
         
         def __repr__(self) -> str:
