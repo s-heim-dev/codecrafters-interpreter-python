@@ -21,9 +21,6 @@ class Interpreter():
 
     def evalGrouping(self, expr: Expression.Grouping) -> object:
         return self.evaluate(expr.expression)
-
-    def evalBinary(self, expr: Expression.Binary) -> object:
-        return expr
     
     def evalUnary(self, expr: Expression.Unary) -> object:
         right = self.evaluate(expr.right)
@@ -34,6 +31,22 @@ class Interpreter():
             return not self.isTruthy(right)
         
         return None
+    
+    def evalBinary(self, expr: Expression.Binary) -> object:
+        left = self.evaluate(expr.left)
+        right = self.evaluate(expr.right)
+    
+        if (expr.operator.tokenType == TokenType.PLUS):
+            return left + right
+        if (expr.operator.tokenType == TokenType.MINUS):
+            return left - right
+        if (expr.operator.tokenType == TokenType.STAR):
+            return left * right
+        if (expr.operator.tokenType == TokenType.SLASH):
+            return left / right
+        
+        return None
+        
 
     def isTruthy(self, obj: object) -> bool:
         if obj == None:
