@@ -71,19 +71,19 @@ class Interpreter():
     def checkNumberOperand(self, operator: Token, operand: object) -> None:
         if (type(operand) == float):
             return
-        raise LoxRuntimeError(operator, "Operand must be a number")
+        raise LoxRuntimeError(operator, "Operand must be a number.")
         
     def checkNumberOperands(self, operator: Token, left: object, right: object) -> None:
         if (type(left) == float and type(right) == float):
             return
-        raise LoxRuntimeError(operator, "Operands must be numbers")
+        raise LoxRuntimeError(operator, "Operands must be numbers.")
     
     def checkNumberOrStringOperands(self, operator: Token, left: object, right: object) -> None:
         if (type(left) == float and type(right) == float):
             return
         if (type(left) == str and type(right) == str):
             return
-        raise LoxRuntimeError(operator, "Operands must be numbers or strings")
+        raise LoxRuntimeError(operator, "Operands must be two numbers or two strings.")
 
     def isTruthy(self, obj: object) -> bool:
         if obj == None:

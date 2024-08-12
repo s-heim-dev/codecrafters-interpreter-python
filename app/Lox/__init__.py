@@ -15,6 +15,7 @@ class Lox():
 
             Lox.evaluate(line)
             LoxError.hadError = False
+            LoxError.hadRuntimeError = False
 
     def runFile(path: str, command: str) -> None:
         with open(path, "r") as file:
@@ -32,6 +33,8 @@ class Lox():
 
         if LoxError.hadError:
             exit(65)
+        elif LoxError.hadRuntimeError:
+            exit(70)
             
     def tokenize(source: str) -> None:
         scanner = Scanner(source)
@@ -43,7 +46,7 @@ class Lox():
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
         tree = parser.parse()
-        if not LoxError.hadError:
+        if not LoxError.hadError and not LoxError.hadRuntimeError:
             print(tree)
     
     def evaluate(source: str) -> None:
