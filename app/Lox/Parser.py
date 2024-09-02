@@ -97,7 +97,20 @@ class Parser():
         return False
     
     def expression(self) -> Expr:
-        return self.equality()
+        return self.assignment()
+    
+    def assignment(self) -> Expr:
+        expr = self.equality()
+
+        if (self.match(TokenType.EQUAL)):
+            equals = self.previous()
+            value = self.assignment()
+            if (type(expr) == Expr.Variable):
+                name = expr.name 
+                return Expr.Assign(name, value)
+            LoxError.parseError(equals, "Invalid assignment target.")
+        
+        return expr
     
     def equality(self) -> Expr:
         expr = self.comparison()

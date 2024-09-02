@@ -61,4 +61,15 @@ class Expr(Expr):
         
         def __repr__(self) -> str:
             return self.__str__()
+    
+    class Assign(Expr):
+        def __init__(self, name: Token, value: Expr):
+            self.name = name
+            self.value = value
+        
+        def __str__(self) -> str:
+            return f"ASSIGN {self.name.lexeme} = {self.value}"
+        
+        def __repr__(self) -> str:
+            return self.__str__()
         

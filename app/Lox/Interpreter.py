@@ -22,10 +22,15 @@ class Interpreter():
             return self.evalUnary(expr)
         if (type(expr) == Expr.Variable):
             return self.evalVariable(expr)
+        if (type(expr) == Expr.Assign):
+            return self.evalAssignment(expr)
         if expr == None:
             return None
 
         raise LoxRuntimeError(expr, "Unknown expression type")
+
+    def evalAssignment(self, expr: Expr.Assign) -> object:
+        self.environment.define(expr.name.lexeme, self.evaluate(expr.value))
     
     def evalVariable(self, expr: Expr.Variable) -> object:
         return self.environment.get(expr.name)
