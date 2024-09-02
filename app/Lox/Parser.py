@@ -13,30 +13,31 @@ class Parser():
         self.tokens = tokens
         self.current = 0
     
-    def parse(self) -> List[Stmt]:
+    def parse(self, ignoreSemicolons: bool = False) -> List[Stmt]:
         try:
             statements = []
             while (not self.isAtEnd()):
-                statements.append(self.statement())
+                statements.append(self.statement(ignoreSemicolons))
             return statements
         except ParseError as error:
             LoxError.runtimeError(error)
             return None
 
     
-    def statement(self) -> Stmt:
+    def statement(self, ignoreSemicolons: bool = False) -> Stmt:
         if self.match(TokenType.PRINT):
             return self.printStatement()
-        return self.expressionStatement()
+        return self.expressionStatement(ignoreSemicolons)
     
     def printStatement(self) -> Stmt:
         expr = self.expression()
         self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Stmt.Print(expr)
     
-    def expressionStatement(self) -> Stmt:
+    def expressionStatement(self, ignoreSemicolons: bool = False) -> Stmt:
         expr = self.expression()
-        #self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        if (not ignoreSemicolons):
+            self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Stmt.Expression(expr)
 
     def peek(self) -> Token:

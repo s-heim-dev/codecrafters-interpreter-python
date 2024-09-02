@@ -106,17 +106,17 @@ class Interpreter():
         
         return str(obj)
     
-    def execute(self, statement: Stmt) -> None:
-        if type(statement) == Stmt.Print or type(statement) == Stmt.Expression:
+    def execute(self, statement: Stmt, ignoreExpressions: bool = False) -> None:
+        if type(statement) == Stmt.Print or (type(statement) == Stmt.Expression and not ignoreExpressions):
             value = self.evaluate(statement.expression)
             print(self.stringify(value))
         else:
             self.evaluate(statement.expression)
     
-    def interpret(self, statements: List[Stmt]) -> None:
+    def interpret(self, statements: List[Stmt], ignoreExpressions: bool = False) -> None:
         try:
             for statement in statements:
-                self.execute(statement)
+                self.execute(statement, ignoreExpressions)
         except LoxRuntimeError as error:
             LoxError.runtimeError(error)
     
