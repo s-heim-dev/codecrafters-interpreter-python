@@ -22,6 +22,8 @@ class Interpreter():
             return self.evalUnary(expr)
         if (type(expr) == Expr.Variable):
             return self.evalVariable(expr)
+        if expr == None:
+            return None
 
         raise LoxRuntimeError(expr, "Unknown expression type")
     

@@ -156,6 +156,9 @@ class Parser():
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Expr.Grouping(expr)
+        
+        if (self.match(TokenType.SEMICOLON)):
+            return None
             
         LoxError.parseError(self.peek(), "Expect expression.")
     

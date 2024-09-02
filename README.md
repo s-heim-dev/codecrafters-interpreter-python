@@ -5,6 +5,7 @@ These are the basics for a Lox interpreter written in Python based on the
 
 ## Commands
 
-- `tokenize`
-- `parse`
-- `evaluate`
+- `tokenize`:   Splits the file into semantic tokens
+- `parse`:      Creates the program statement tree
+- `evaluate`:   Prints the result of each line
+- `run`:        Executes the file
