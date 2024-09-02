@@ -141,7 +141,7 @@ class Interpreter():
         elif type(statement) == Stmt.Var:
             self.environment.define(statement.name.lexeme, self.evaluate(statement.expression))
         elif type(statement) == Stmt.Block:
-            self.executeBlock(statement.statements, Environment(), ignoreExpressions)
+            self.executeBlock(statement.statements, Environment(self.environment), ignoreExpressions)
         else:
             self.evaluate(statement.expression)
     

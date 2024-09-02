@@ -1,9 +1,18 @@
+from copy import deepcopy
+from typing import Dict
+
 from app.Lox.LoxError import LoxRuntimeError
 from app.Lox.Token import Token
 
 class Environment():
-    def __init__(self):
-        self.values = {}
+    pass
+
+class Environment(Environment):
+    def __init__(self, outer: Environment = None):
+        if outer:
+            self.values = deepcopy(outer.values)
+        else:
+            self.values = {}
     
     def define(self, name: str, value: object) -> None:
         self.values[name] = value
