@@ -33,7 +33,8 @@ class LoxError():
 
         raise ParseError(message)
     
-    def runtimeError(error: LoxRuntimeError) -> None:
-        print(str(error) + "\n[line " + str(error.token.line) + "]", file=sys.stderr)
+    def runtimeError(error: RuntimeError) -> None:
+        if (type(error) == LoxRuntimeError):
+            print(str(error) + "\n[line " + str(error.token.line) + "]", file=sys.stderr)
         LoxError.hadRuntimeError = True
 

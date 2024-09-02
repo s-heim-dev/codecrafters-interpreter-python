@@ -25,13 +25,13 @@ class Lox():
             Lox.tokenize(file_content)
         elif command == "parse":
             Lox.parse(file_content)
-        elif command == "evaluate":
+        elif command == "evaluate" or command == "run":
             Lox.evaluate(file_content)
         else:
             print(f"Unknown command: {command}", file=sys.stderr)
             exit(1)
 
-        if LoxError.hadSyntaxError:
+        if LoxError.hadSyntaxError and not command == "evaluate":
             exit(65)
         elif LoxError.hadRuntimeError:
             exit(70)
@@ -45,14 +45,16 @@ class Lox():
         scanner = Scanner(source)
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
-        tree = parser.parse()
+        statements = parser.parse()
         if not LoxError.hadError():
-            print(tree)
+            [print(statement) for statement in statements]
     
     def evaluate(source: str) -> None:
         scanner = Scanner(source)
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
-        tree = parser.parse()
+        statements = parser.parse()
+        if not statements:
+            return
         interpreter = Interpreter()
-        interpreter.interpret(tree)
+        interpreter.interpret(statements)

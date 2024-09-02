@@ -1,28 +1,31 @@
+from typing import List
+
 from app.Lox.LoxError import LoxError, LoxRuntimeError, ParseError
-from app.Lox.Expression import Expression
+from app.Lox.Expression import Expr
+from app.Lox.Statement import Stmt
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
 
 class Interpreter():
-    def evaluate(self, expr: Expression) -> object:
-        if (type(expr) == Expression.Literal):
+    def evaluate(self, expr: Expr) -> object:
+        if (type(expr) == Expr.Literal):
             return self.evalLiteral(expr)
-        if (type(expr) == Expression.Grouping):
+        if (type(expr) == Expr.Grouping):
             return self.evalGrouping(expr)
-        if (type(expr) == Expression.Binary):
+        if (type(expr) == Expr.Binary):
             return self.evalBinary(expr)
-        if (type(expr) == Expression.Unary):
+        if (type(expr) == Expr.Unary):
             return self.evalUnary(expr)
 
-        raise LoxRuntimeError(expr)
+        raise LoxRuntimeError(expr, "Unknown expression type")
 
-    def evalLiteral(self, expr: Expression.Literal) -> object:
+    def evalLiteral(self, expr: Expr.Literal) -> object:
         return expr.value
 
-    def evalGrouping(self, expr: Expression.Grouping) -> object:
+    def evalGrouping(self, expr: Expr.Grouping) -> object:
         return self.evaluate(expr.expression)
     
-    def evalUnary(self, expr: Expression.Unary) -> object:
+    def evalUnary(self, expr: Expr.Unary) -> object:
         right = self.evaluate(expr.right)
 
         if (expr.operator.tokenType == TokenType.MINUS):
@@ -33,7 +36,7 @@ class Interpreter():
         
         return None
     
-    def evalBinary(self, expr: Expression.Binary) -> object:
+    def evalBinary(self, expr: Expr.Binary) -> object:
         left = self.evaluate(expr.left)
         right = self.evaluate(expr.right)
     
@@ -103,10 +106,17 @@ class Interpreter():
         
         return str(obj)
     
-    def interpret(self, expr: Expression) -> None:
-        try:
-            value = self.evaluate(expr)
+    def execute(self, statement: Stmt) -> None:
+        if type(statement) == Stmt.Print or type(statement) == Stmt.Expression:
+            value = self.evaluate(statement.expression)
             print(self.stringify(value))
+        else:
+            self.evaluate(statement.expression)
+    
+    def interpret(self, statements: List[Stmt]) -> None:
+        try:
+            for statement in statements:
+                self.execute(statement)
         except LoxRuntimeError as error:
             LoxError.runtimeError(error)
     

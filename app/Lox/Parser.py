@@ -1,7 +1,10 @@
 from typing import List
 
+import sys
+
 from app.Lox.LoxError import LoxError, ParseError
-from app.Lox.Expression import Expression
+from app.Lox.Expression import Expr
+from app.Lox.Statement import Stmt
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
 
@@ -10,11 +13,31 @@ class Parser():
         self.tokens = tokens
         self.current = 0
     
-    def parse(self) -> Expression:
+    def parse(self) -> List[Stmt]:
         try:
-            return self.expression()
-        except ParseError:
+            statements = []
+            while (not self.isAtEnd()):
+                statements.append(self.statement())
+            return statements
+        except ParseError as error:
+            LoxError.runtimeError(error)
             return None
+
+    
+    def statement(self) -> Stmt:
+        if self.match(TokenType.PRINT):
+            return self.printStatement()
+        return self.expressionStatement()
+    
+    def printStatement(self) -> Stmt:
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Stmt.Print(expr)
+    
+    def expressionStatement(self) -> Stmt:
+        expr = self.expression()
+        #self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Stmt.Expression(expr)
 
     def peek(self) -> Token:
         return self.tokens[self.current]
@@ -42,63 +65,63 @@ class Parser():
                 return True
         return False
     
-    def expression(self) -> Expression:
+    def expression(self) -> Expr:
         return self.equality()
     
-    def equality(self) -> Expression:
+    def equality(self) -> Expr:
         expr = self.comparison()
         while (self.match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)):
             operator = self.previous()
             right = self.comparison()
-            expr = Expression.Binary(expr, operator, right)
+            expr = Expr.Binary(expr, operator, right)
         return expr
     
-    def comparison(self) -> Expression:
+    def comparison(self) -> Expr:
         expr = self.term()
         while(self.match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)):
             operator = self.previous()
             right = self.term()
-            expr = Expression.Binary(expr, operator, right)
+            expr = Expr.Binary(expr, operator, right)
         return expr
     
-    def term(self) -> Expression:
+    def term(self) -> Expr:
         expr = self.factor()
         while(self.match(TokenType.MINUS, TokenType.PLUS)):
             operator = self.previous()
             right = self.factor()
-            expr = Expression.Binary(expr, operator, right)
+            expr = Expr.Binary(expr, operator, right)
         return expr
     
-    def factor(self) -> Expression:
+    def factor(self) -> Expr:
         expr = self.unary()
         while(self.match(TokenType.SLASH, TokenType.STAR)):
             operator = self.previous()
             right = self.unary()
-            expr = Expression.Binary(expr, operator, right)
+            expr = Expr.Binary(expr, operator, right)
         return expr
     
-    def unary(self) -> Expression:
+    def unary(self) -> Expr:
         if (self.match(TokenType.BANG, TokenType.MINUS)):
             operator = self.previous()
             right = self.unary()
-            return Expression.Unary(operator, right)
+            return Expr.Unary(operator, right)
         return self.primary()
     
-    def primary(self) -> Expression:
+    def primary(self) -> Expr:
         if (self.match(TokenType.FALSE)):
-            return Expression.Literal(False)
+            return Expr.Literal(False)
         if (self.match(TokenType.TRUE)):
-            return Expression.Literal(True)
+            return Expr.Literal(True)
         if (self.match(TokenType.NIL)):
-            return Expression.Literal(None)
+            return Expr.Literal(None)
         
         if (self.match(TokenType.NUMBER, TokenType.STRING)):
-            return Expression.Literal(self.previous().literal)
+            return Expr.Literal(self.previous().literal)
         
         if (self.match(TokenType.LEFT_PAREN)):
             expr = self.expression()
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
-            return Expression.Grouping(expr)
+            return Expr.Grouping(expr)
             
         LoxError.parseError(self.peek(), "Expect expression.")
     
