@@ -12,6 +12,9 @@ class Interpreter():
         self.environment = Environment()
 
     def evaluate(self, expr: Expr) -> object:
+        if expr == None:
+            return None
+
         if (type(expr) == Expr.Literal):
             return self.evalLiteral(expr)
         if (type(expr) == Expr.Grouping):
@@ -24,13 +27,13 @@ class Interpreter():
             return self.evalVariable(expr)
         if (type(expr) == Expr.Assign):
             return self.evalAssignment(expr)
-        if expr == None:
-            return None
 
         raise LoxRuntimeError(expr, "Unknown expression type")
 
     def evalAssignment(self, expr: Expr.Assign) -> object:
-        self.environment.define(expr.name.lexeme, self.evaluate(expr.value))
+        value = self.evaluate(expr.value)
+        self.environment.define(expr.name.lexeme, value)
+        return value
     
     def evalVariable(self, expr: Expr.Variable) -> object:
         return self.environment.get(expr.name)
@@ -122,13 +125,23 @@ class Interpreter():
         
         return str(obj)
     
+    def executeBlock(self, statements: List[Stmt], environment: Environment, ignoreExpressions: bool = False):
+        previous = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                self.execute(statement, ignoreExpressions)
+        finally:
+            self.environment = previous
+    
     def execute(self, statement: Stmt, ignoreExpressions: bool = False) -> None:
         if type(statement) == Stmt.Print or (type(statement) == Stmt.Expression and not ignoreExpressions):
             value = self.evaluate(statement.expression)
             print(self.stringify(value))
         elif type(statement) == Stmt.Var:
-            value = self.evaluate(statement.expression)
-            self.environment.define(statement.name.lexeme, value)
+            self.environment.define(statement.name.lexeme, self.evaluate(statement.expression))
+        elif type(statement) == Stmt.Block:
+            self.executeBlock(statement.statements, Environment(), ignoreExpressions)
         else:
             self.evaluate(statement.expression)
     

@@ -1,3 +1,5 @@
+from typing import List
+
 from app.Lox.Expression import Expr
 from app.Lox.Token import Token
 
@@ -32,6 +34,16 @@ class Stmt(Stmt):
         
         def __str__(self) -> str:
             return f"VAR {self.name.lexeme} = {self.expression}"
+        
+        def __repr__(self) -> str:
+            return self.__str__()
+    
+    class Block(Stmt):
+        def __init__(self, statements: List[Stmt]):
+            self.statements = statements
+        
+        def __str__(self) -> str:
+            return f"BLOCK {self.statements}"
         
         def __repr__(self) -> str:
             return self.__str__()
