@@ -1,12 +1,16 @@
 from typing import List
 
 from app.Lox.LoxError import LoxError, LoxRuntimeError, ParseError
+from app.Lox.Environment import Environment
 from app.Lox.Expression import Expr
 from app.Lox.Statement import Stmt
 from app.Lox.Token import Token
 from app.Lox.TokenType import TokenType
 
 class Interpreter():
+    def __init__(self):
+        self.environment = Environment()
+
     def evaluate(self, expr: Expr) -> object:
         if (type(expr) == Expr.Literal):
             return self.evalLiteral(expr)
@@ -16,8 +20,13 @@ class Interpreter():
             return self.evalBinary(expr)
         if (type(expr) == Expr.Unary):
             return self.evalUnary(expr)
+        if (type(expr) == Expr.Variable):
+            return self.evalVariable(expr)
 
         raise LoxRuntimeError(expr, "Unknown expression type")
+    
+    def evalVariable(self, expr: Expr.Variable) -> object:
+        return self.environment.get(expr.name)
 
     def evalLiteral(self, expr: Expr.Literal) -> object:
         return expr.value
@@ -110,13 +119,17 @@ class Interpreter():
         if type(statement) == Stmt.Print or (type(statement) == Stmt.Expression and not ignoreExpressions):
             value = self.evaluate(statement.expression)
             print(self.stringify(value))
+        elif type(statement) == Stmt.Var:
+            value = self.evaluate(statement.expression)
+            self.environment.define(statement.name.lexeme, value)
         else:
             self.evaluate(statement.expression)
     
     def interpret(self, statements: List[Stmt], ignoreExpressions: bool = False) -> None:
         try:
             for statement in statements:
-                self.execute(statement, ignoreExpressions)
+                if statement:
+                    self.execute(statement, ignoreExpressions)
         except LoxRuntimeError as error:
             LoxError.runtimeError(error)
     

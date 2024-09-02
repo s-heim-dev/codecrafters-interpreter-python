@@ -17,28 +17,58 @@ class Parser():
         try:
             statements = []
             while (not self.isAtEnd()):
-                statements.append(self.statement(ignoreSemicolons))
+                statements.append(self.declaration(ignoreSemicolons))
             return statements
         except ParseError as error:
             LoxError.runtimeError(error)
             return None
 
-    
+    def declaration(self, ignoreSemicolons: bool = False) -> Stmt:
+        try:
+            if (self.match(TokenType.VAR)):
+                return self.varDeclaration()
+
+            return self.statement(ignoreSemicolons)
+        except ParseError:
+            self.synchronize()
+            return None
+
     def statement(self, ignoreSemicolons: bool = False) -> Stmt:
         if self.match(TokenType.PRINT):
             return self.printStatement()
         return self.expressionStatement(ignoreSemicolons)
     
-    def printStatement(self) -> Stmt:
+    def printStatement(self) -> Stmt.Print:
         expr = self.expression()
         self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Stmt.Print(expr)
     
-    def expressionStatement(self, ignoreSemicolons: bool = False) -> Stmt:
+    def expressionStatement(self, ignoreSemicolons: bool = False) -> Stmt.Expression:
         expr = self.expression()
         if (not ignoreSemicolons):
             self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Stmt.Expression(expr)
+    
+    def varDeclaration(self) -> Stmt.Var:
+        name = self.consume(TokenType.IDENTIFIER, "Expect variable name")
+        initializer = None
+        if (self.match(TokenType.EQUAL)):
+            initializer = self.expression()
+        
+        self.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return Stmt.Var(name, initializer)
+
+    def synchronize(self) -> None:
+        self.advance()
+        while (not self.isAtEnd()):
+            if (self.previous().tokenType == TokenType.SEMICOLON):
+                return
+        
+            peek = self.peek().tokenType
+            if (peek == TokenType.CLASS or peek == TokenType.FUN or peek == TokenType.VAR \
+                or peek == TokenType.FOR or peek == TokenType.IF or peek == TokenType.WHILE \
+                or peek == TokenType.PRINT or peek == TokenType.RETURN):
+                return
 
     def peek(self) -> Token:
         return self.tokens[self.current]
@@ -118,6 +148,9 @@ class Parser():
         
         if (self.match(TokenType.NUMBER, TokenType.STRING)):
             return Expr.Literal(self.previous().literal)
+        
+        if (self.match(TokenType.IDENTIFIER)):
+            return Expr.Variable(self.previous())
         
         if (self.match(TokenType.LEFT_PAREN)):
             expr = self.expression()
