@@ -26,7 +26,7 @@ class Lox():
         elif command == "parse":
             Lox.parse(file_content)
         elif command == "evaluate" or command == "run":
-            Lox.evaluate(file_content, command="run")
+            Lox.evaluate(file_content)
         else:
             print(f"Unknown command: {command}", file=sys.stderr)
             exit(1)
@@ -45,16 +45,16 @@ class Lox():
         scanner = Scanner(source)
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
-        statements = parser.parse()
+        statements = parser.parse(ignoreSemicolons=True)
         if not LoxError.hadError():
             [print(statement) for statement in statements]
     
-    def evaluate(source: str, command: str = "evaluate") -> None:
+    def evaluate(source: str) -> None:
         scanner = Scanner(source)
         tokens = scanner.scanTokens()
         parser = Parser(tokens)
-        statements = parser.parse(command == "evaluate")
+        statements = parser.parse(True)
         if not statements:
             return
         interpreter = Interpreter()
-        interpreter.interpret(statements, command == "run")
+        interpreter.interpret(statements, False)
